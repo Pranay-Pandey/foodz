@@ -1,6 +1,16 @@
 import React, {useState} from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import GridLoader from "react-spinners/GridLoader";
+
+const loaderStyle = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
+  filter: "none",
+  position: "absolute",
+  left: "45%",
+};
 
 const Login = () => {
   // if token in local storage, redirect to home
@@ -8,11 +18,13 @@ const Login = () => {
     window.location.href = '/'
   }
 
+  let [loading, setLoading] = useState(false);
+  let [color, setColor] = useState("#00ff00");
+
   const [form, setForm] = useState({
     email: '',
     password: '',
   })
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -21,6 +33,8 @@ const Login = () => {
   // handle on form submit
   const handleSubmit = (e) => {
     e.preventDefault()
+    document.querySelector('body').style.filter = 'blur(5px)'
+    setLoading(true)
     const data = new FormData(e.target)
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/login`, {
       method: 'POST',
@@ -44,12 +58,24 @@ const Login = () => {
         window.location.href = '';
       }).catch((error) => {
         toast.error(`${error}`)
+      }).finally(() => {
+        setLoading(false)
+        document.querySelector('body').style.filter = 'none'
       })
   }
 
     return (
       <form onSubmit={handleSubmit}>
         <h3>Login</h3>
+        
+        <GridLoader
+        color={color}
+        loading={loading}
+        cssOverride={loaderStyle}
+        size={50}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
 
         <div className="mb-3">
           <label>Email address</label>

@@ -1,6 +1,16 @@
 import React, {useState} from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import GridLoader from "react-spinners/GridLoader";
+
+const loaderStyle = {
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red",
+  filter: "none",
+  position: "absolute",
+  left: "45%",
+};
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -10,12 +20,17 @@ const Register = () => {
     password: "",
   });
 
+  let [loading, setLoading] = useState(false);
+  let [color, setColor] = useState("#00ff00");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    document.querySelector('body').style.filter = 'blur(5px)'
+    setLoading(true)
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/register`, {
       method: 'POST',
       body: JSON.stringify(form),
@@ -38,16 +53,27 @@ const Register = () => {
         if (data.token === undefined) {
           throw new Error('Invalid credentials')
         }
-        alert('Registration successful')
         window.location.href = '/login';
       }).catch((error) => {
         toast.error(`${error}`)
+      }).finally(() => {
+        document.querySelector('body').style.filter = 'none'
+        setLoading(false)
       })
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <h3>Register</h3>
+
+      <GridLoader
+        color={color}
+        loading={loading}
+        cssOverride={loaderStyle}
+        size={50}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
 
       <div className="mb-3">
         <label>First name</label>
