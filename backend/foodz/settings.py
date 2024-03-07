@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'rest_framework',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'recipe.apps.RecipeConfig'
+
 ]
 
 MIDDLEWARE = [
