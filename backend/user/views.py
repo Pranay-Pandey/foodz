@@ -121,3 +121,41 @@ def login(request):
             return JsonResponse({"error": "Invalid password"}, status=400)
     except User.DoesNotExist:
         return JsonResponse({"error": "User does not exist"}, status=404)
+
+@swagger_auto_schema(
+    tags=['User'],
+    method='get',
+    manual_parameters=[
+        openapi.Parameter('Authorization', openapi.IN_HEADER, description="Token", type=openapi.TYPE_STRING)
+    ],
+    responses={
+        200: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+                'firstName': openapi.Schema(type=openapi.TYPE_STRING),
+                'lastName': openapi.Schema(type=openapi.TYPE_STRING),
+                'email': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        ),
+        400: openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'error': openapi.Schema(type=openapi.TYPE_STRING)
+            }
+        )
+    }   
+)
+@api_view(['GET'])
+@csrf_exempt
+@require_http_methods(['GET'])
+def get_user(request):
+    token = request.headers.get('Authorization')
+    if not token:
+        return JsonResponse({"error": "Token is required"}, status=400)
+    try:
+        payload = decode_token(token)
+        user = User.objects.get(id=payload['id'])
+        return JsonResponse({"id": user.id, "firstName": user.firstName, "lastName": user.lastName, "email": user.email}, status=200)
+    except:
+        return JsonResponse({"error": "Invalid token"}, status=400)
