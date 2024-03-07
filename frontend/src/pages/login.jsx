@@ -65,6 +65,8 @@ const Login = () => {
   }
 
     return (
+      <div className="auth-wrapper">
+      <div className="auth-inner">
       <form onSubmit={handleSubmit}>
         <h3>Login</h3>
         
@@ -128,6 +130,9 @@ const Login = () => {
         </p>
         <ToastContainer />
       </form>
+      
+      </div>
+      </div>
     )
 }
 

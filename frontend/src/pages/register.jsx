@@ -63,6 +63,8 @@ const Register = () => {
   }
 
   return (
+    <div className="auth-wrapper">
+    <div className="auth-inner">
     <form onSubmit={handleSubmit}>
       <h3>Register</h3>
 
@@ -140,6 +142,8 @@ const Register = () => {
       </p>
      <ToastContainer />
     </form>
+    </div>
+    </div>
   )
 }
 
