@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, NumberInput, FileInput, TagsInput, Button, Paper, Text } from '@mantine/core';
+import { TextInput, NumberInput, FileInput, TagsInput, Button, Paper, Text, Textarea } from '@mantine/core';
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -9,6 +9,7 @@ function RecipeForm(props) {
   const [time, setTime] = useState('');
   const [image, setImage] = useState(null);
   const [ingredients, setIngredients] = useState([]);
+  const [procedure, setProcedure] = useState('');
   const handler = props.handler;
 
   const onSubmit = (event) => {
@@ -24,6 +25,7 @@ function RecipeForm(props) {
       ing.push(ingredients[i]);
     }
     formData.append('ingredients', ing);
+    formData.append('procedure', procedure);
 
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/create`, {
       method: 'POST',
@@ -80,6 +82,16 @@ function RecipeForm(props) {
           value={ingredients}
           required
           onChange={setIngredients}
+        />
+        <Textarea
+          label="Procedure"
+          placeholder="Enter cooking instructions (Separate steps with a newline)"
+          required
+          value={procedure}
+          onChange={(event) => setProcedure(event.currentTarget.value)}
+          autosize
+          minRows={2}
+          maxRows={4}
         />
         <Button color="blue" fullWidth style={{marginTop: "2rem"}} onClick={onSubmit}>
           Submit

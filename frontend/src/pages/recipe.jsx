@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Text, Image, Badge, Grid, Divider, TextInput, NumberInput, FileInput, TagsInput, Button, ActionIcon , Group} from '@mantine/core';
+import { Paper, Text, Image, Badge, Grid, Divider, TextInput, NumberInput, FileInput, TagsInput, Button, ActionIcon , Group, Textarea} from '@mantine/core';
 import { ToastContainer, toast } from 'react-toastify';
-import { FaClock, FaTimes } from "react-icons/fa";
+import { FaClock, FaTimes , FaTrash, FaPlusCircle} from "react-icons/fa";
 import { CiHeart } from 'react-icons/ci';
 import { MdFavorite } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
@@ -59,7 +59,6 @@ function RecipePage() {
   };
 
   const handleUpdate = () => {
-    // Handle update
     const formData = new FormData();
     formData.append('title', recipe.title);
     formData.append('description', recipe.description);
@@ -70,7 +69,7 @@ function RecipePage() {
       ing.push(recipe.ingredients[i]);
     }
     formData.append('ingredients', ing);
-    formData.append('procedure', recipe.procedure);
+    formData.append('procedure', recipe.procedure.join('\n'));
 
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/update/${id}`, { 
       method: 'PUT',
@@ -154,9 +153,19 @@ function RecipePage() {
     setRecipe({ ...recipe, image: 'https://via.placeholder.com/300' });
   };
 
+  const addStepAfter = (index) => {
+    const newProcedure = [...recipe.procedure];
+    newProcedure.splice(index + 1, 0, '');
+    setRecipe({ ...recipe, procedure: newProcedure });
+  };
+
   if (!recipe) {
     return <div>Loading...</div>;
   }
+
+  const deleteStep = (index) => {
+    setRecipe({ ...recipe, procedure: recipe.procedure.filter((_, i) => i !== index) });
+  };
 
   const { title, description, time, image, ingredients, procedure } = recipe;
 
@@ -240,7 +249,7 @@ function RecipePage() {
         ))
       )}
       <Divider style={{ margin: '15px 0' }} />
-      <Text size="lg" weight={500} style={{ marginBottom: 10 }}>
+      {/* <Text size="lg" weight={500} style={{ marginBottom: 10 }}>
         Procedure
       </Text>
       {editing ? (
@@ -252,7 +261,49 @@ function RecipePage() {
         />
       ) : (
         <Text size="sm">{procedure}</Text>
-      )}
+      )} */}
+      <Text size="lg" weight={500} style={{ marginBottom: 10 }}>
+          Procedure
+      </Text>
+        {editing ? 
+        <>{(
+          recipe.procedure.map((step, index) => (
+            <div key={index} style={{ }}>
+              <Grid>
+                <Grid.Col span={1}>
+                  <Badge color="blue" size="lg" style={{ marginRight: '1rem'}}>{index + 1}</Badge>
+                </Grid.Col>
+                <Grid.Col span={10}>
+                  <Textarea
+                    resize="both"
+                    placeholder={`Enter step ${index + 1}`}
+                    required
+                    value={step}
+                    onChange={(event) => setRecipe({ ...recipe, procedure: recipe.procedure.map((s, i) => i === index ? event.currentTarget.value : s) })}
+                    autosize
+                    minRows={2}
+                    maxRows={6}
+                  />
+                </Grid.Col>
+                <Grid.Col span={1}>
+                  <ActionIcon color="red" onClick={() => deleteStep(index)}><FaTrash /></ActionIcon>
+                  
+                  {/* <ActionIcon color="green" onClick={() => deleteStep(index)}><FaTrash /></ActionIcon> */}
+                  <ActionIcon color="green" onClick={() => addStepAfter(index)}><FaPlusCircle /></ActionIcon>
+                </Grid.Col>
+              </Grid>
+            </div>
+          ))  )}
+          </>    
+         : (
+          procedure.map((step, index) => (
+            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+              <Badge color="blue" style={{ marginRight: '1rem' }}>{index + 1}</Badge>
+              <Text size="sm">{step}</Text>
+            </div>
+          ))
+        )}
+      < Divider style={{ margin: '15px 0' }} />
       {editable && (
         <Group>
           <Button onClick={editing ? handleUpdate : handleEdit}>

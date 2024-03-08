@@ -40,3 +40,7 @@ body.loading {
     transform: rotate(360deg);
   }
 }
+
+.mantine-Badge-label{
+  overflow: visible !important;
+}
