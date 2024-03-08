@@ -12,7 +12,7 @@ function RecipePage() {
   const [recipe, setRecipe] = useState(null);
   const [editable, setEditable] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [newImage, setNewImage] = useState(null);
+  const [newImage, setNewImage] = useState('');
   const [favourite, setFavourite] = useState(false);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function RecipePage() {
             title: data.title,
             description: data.description,
             time: data.time,
-            image: data.image ? `${import.meta.env.VITE_BACKEND_BASE_URL}${data.image}`: 
+            image: (data.image && data.image !== "") ? `${data.image}`: 
             'https://cdn.dribbble.com/users/200279/screenshots/16510142/artboard_281_4x.png',
             ingredients: data.ingredients,
             procedure: data.procedure,
@@ -92,6 +92,8 @@ function RecipePage() {
 
   const handleDelete = () => {
     // Handle update
+    // Add loading to the body
+    document.body.classList.add('loading');
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/delete/${id}`, { 
       method: 'DELETE',
       headers: {
@@ -110,10 +112,14 @@ function RecipePage() {
       toast.error('Error deleting recipe');
     }).finally(() => {
       setEditing(false);
+      // Remove loading from the body
+      document.body.classList.remove('loading');
     });
   };
 
   const toggleFavourite = () => {
+    // Add loading to the body
+    document.body.classList.add('loading');
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/favourite/${id}`, {
       method: 'POST',
       headers: {
@@ -140,17 +146,15 @@ function RecipePage() {
     }).catch(error => {
       console.error('Error:', error);
       toast.error('Error adding recipe to favourites');
+    }).finally(() => {
+      // Remove loading from the body
+      document.body.classList.remove('loading');
     });
-  };
-
-  const handleImageChange = (file) => {
-    setNewImage(file);
-    setRecipe({ ...recipe, image: URL.createObjectURL(file) });
   };
 
   const handleImageRemove = () => {
     setNewImage(null);
-    setRecipe({ ...recipe, image: 'https://via.placeholder.com/300' });
+    setRecipe({ ...recipe, image: 'https://cdn.dribbble.com/users/200279/screenshots/16510142/artboard_281_4x.png' });
   };
 
   const addStepAfter = (index) => {
@@ -190,15 +194,17 @@ function RecipePage() {
       </Group>
       <div style={{ height: 10 }}></div>
       {editing ? (
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div style={{ position: 'relative'}}>
           <Image src={image} alt={title}  style={{ width: "fit-content", margin:"auto", height: 300, maxWidth: "600px" }} />
           <ActionIcon variant="transparent" radius="xl" style={{ position: 'absolute', top: 10, right: 10 }} onClick={handleImageRemove}>
             <FaTimes />
           </ActionIcon>
-          <FileInput
-            label="Change image"
-            onChange={handleImageChange}
-            style={{ marginTop: 10 }}
+          < TextInput
+            label="Image"
+            placeholder="Enter image URL"
+            value={image}
+            onChange={(event) => setRecipe({ ...recipe, image: event.currentTarget.value })
+          }
           />
         </div>
       ) : (

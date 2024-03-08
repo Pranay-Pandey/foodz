@@ -7,14 +7,15 @@ function RecipeForm(props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [time, setTime] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState('');
   const [ingredients, setIngredients] = useState([]);
   const [procedure, setProcedure] = useState('');
   const handler = props.handler;
 
   const onSubmit = (event) => {
     event.preventDefault();
-
+    // Add loading to the body
+    document.body.classList.add('loading');
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -42,6 +43,9 @@ function RecipeForm(props) {
     .catch((error) => {
       console.error(error)
       toast.error("Error adding recipe")
+    }).finally(() => {
+      // Remove loading from the body
+      document.body.classList.remove('loading');
     });
   };
 
@@ -70,12 +74,18 @@ function RecipeForm(props) {
           value={time}
           onChange={(value) => setTime(value)}
         />
-        <FileInput
+        < TextInput
+          label="Image"
+          placeholder="Enter image URL"
+          value={image}
+          onChange={(event) => setImage(event.currentTarget.value)}
+        />
+        {/* <FileInput
           clearable
           placeholder="Upload image"
           label="Image"
           onChange={(file) => setImage(file)}
-        />
+        /> */}
         <TagsInput
           label="Ingredients"
           placeholder="Enter ingredients (Enter to add)"

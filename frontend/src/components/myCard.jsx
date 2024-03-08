@@ -18,8 +18,8 @@ export default function MyCard(props) {
   };
   const handler = props.handler;
 
-  if (props.image){
-    mockdata.image = `${import.meta.env.VITE_BACKEND_BASE_URL}${props.image}`;
+  if (props.image && props.image !== ''){
+    mockdata.image = `${props.image}`;
   }
 
   const { image, title, description, badges } = mockdata;
