@@ -5,6 +5,7 @@ import { IoMdLogIn } from "react-icons/io";
 import { FaRegUser } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import { FaHome } from "react-icons/fa";
+import ThemeToggle from "./themeToogle";
 
 const Navbar = () => {
     const [hovered, setHovered] = useState([false, false, false, false]);
@@ -72,6 +73,8 @@ const Navbar = () => {
                                     <Text size="sm">Logout</Text>
                                 </Popover.Dropdown>
                             </Popover>
+                            
+                            < ThemeToggle />
                         </div>
                     </Grid.Col>
                 </Grid>
