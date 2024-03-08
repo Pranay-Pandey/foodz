@@ -19,14 +19,14 @@ body::after {
   content: "";
   background: inherit;
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  left: -10px; /* extend the left edge */
+  right: -10px; /* extend the right edge */
+  top: -10px; /* extend the top edge */
+  bottom: -10px; /* extend the bottom edge */
   z-index: -1;
   filter: blur(10px);
+  transform: scale(1.1); /* scale the element up */
 }
-
 
 h1,
 h2,
