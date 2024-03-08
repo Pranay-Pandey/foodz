@@ -10,7 +10,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from recipe.models import Recipe, Ingredient, Favourites, Procedure
 from user.models import User
-from uuid import uuid4
+# from uuid import uuid4
+import shortuuid
 
 @swagger_auto_schema(
     tags=['Recipe'],
@@ -53,7 +54,7 @@ def get_recipe(request):
             ingredients = recipe.ingredients.all()
             procedure = recipe.procedure.all().order_by('order')
             data.append({
-                'key': str(uuid4()),
+                'key': str(shortuuid.uuid()),
                 'id': recipe.id,
                 'title': recipe.title,
                 'description': recipe.description,
@@ -181,7 +182,7 @@ def recipe_from_ingredients(request):
         ingredients = recipe.ingredients.all()
         procedure = recipe.procedure.all().order_by('order')
         data.append({
-            'key': str(uuid4()),
+            'key': str(shortuuid.uuid()),
             'id': recipe.id,
             'title': recipe.title,
             'description': recipe.description,
@@ -269,7 +270,7 @@ def get_favourites(request):
             ingredients = recipe.ingredients.all()
             procedure = recipe.procedure.all().order_by('order')
             data.append({
-                'key': str(uuid4()),
+                'key': str(shortuuid.uuid()),
                 'id': recipe.id,
                 'title': recipe.title,
                 'description': recipe.description,
@@ -325,7 +326,7 @@ def myrecipes(request):
             ingredients = recipe.ingredients.all()
             procedure = recipe.procedure.all().order_by('order')
             data.append({
-                'key': str(uuid4()),
+                'key': str(shortuuid.uuid()),
                 'id': recipe.id,
                 'title': recipe.title,
                 'description': recipe.description,
@@ -363,7 +364,7 @@ def getIngredients(request):
     data = []
     for ingredient in ingredients:
         data.append({
-            'key': str(uuid4()),
+            'key': str(shortuuid.uuid()),
             'id': ingredient.id,
             'name': ingredient.name
         })
@@ -420,7 +421,7 @@ def searchRecipeName(request):
         ingredients = recipe.ingredients.all()
         procedure = recipe.procedure.all().order_by('order')
         data.append({
-            'key': str(uuid4()),
+            'key': str(shortuuid.uuid()),
             'id': recipe.id,
             'title': recipe.title,
             'description': recipe.description,
