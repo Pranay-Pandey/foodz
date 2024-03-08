@@ -58,7 +58,7 @@ def get_recipe(request):
                 'id': recipe.id,
                 'title': recipe.title,
                 'description': recipe.description,
-                'image': recipe.image.url if recipe.image else None,
+                'image': recipe.image,
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
                 'procedure': [step.step for step in procedure],
@@ -109,7 +109,7 @@ def create(request):
             description=data['description'],
             time=data['time'],
             user=user,
-            image=request.FILES['image'] if 'image' in request.FILES else None
+            image=data['image']
         )
         for ingredient_name in data['ingredients'].split(','):
             ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
@@ -186,7 +186,7 @@ def recipe_from_ingredients(request):
             'id': recipe.id,
             'title': recipe.title,
             'description': recipe.description,
-            'image': recipe.image.url if recipe.image else None,
+            'image': recipe.image,
             'time': recipe.time,
             'ingredients': [ingredient.name for ingredient in ingredients],
             'procedure': [step.step for step in procedure],
@@ -274,7 +274,7 @@ def get_favourites(request):
                 'id': recipe.id,
                 'title': recipe.title,
                 'description': recipe.description,
-                'image': recipe.image.url if recipe.image else None,
+                'image': recipe.image,
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
                 'procedure': [step.step for step in procedure],
@@ -330,7 +330,7 @@ def myrecipes(request):
                 'id': recipe.id,
                 'title': recipe.title,
                 'description': recipe.description,
-                'image': recipe.image.url if recipe.image else None,
+                'image': recipe.image,
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
                 'procedure': [step.step for step in procedure],
@@ -425,7 +425,7 @@ def searchRecipeName(request):
             'id': recipe.id,
             'title': recipe.title,
             'description': recipe.description,
-            'image': recipe.image.url if recipe.image else None,
+            'image': recipe.image,
             'time': recipe.time,
             'ingredients': [ingredient.name for ingredient in ingredients],
             'procedure': [step.step for step in procedure],
@@ -451,7 +451,7 @@ def getRecipeFromId(request, id):
             'id': recipe.id,
             'title': recipe.title,
             'description': recipe.description,
-            'image': recipe.image.url if recipe.image else None,
+            'image': recipe.image,
             'time': recipe.time,
             'ingredients': [ingredient.name for ingredient in ingredients],
             'procedure': [step.step for step in procedure],
@@ -484,8 +484,9 @@ def editRecipe(request, id):
         recipe.title = data['title']
         recipe.description = data['description']
         recipe.time = data['time']
-        if 'image' in request.FILES and request.FILES['image']:
-            recipe.image = request.FILES['image']
+        recipe.image = data['image']
+        # if 'image' in request.FILES and request.FILES['image']:
+        #     recipe.image = request.FILES['image']
         recipe.save()
         recipe.ingredients.clear()
         for ingredient_name in data['ingredients'].split(','):

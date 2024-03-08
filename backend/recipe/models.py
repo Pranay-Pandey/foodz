@@ -3,7 +3,7 @@ from django.db import models
 class Recipe(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    image = models.ImageField(upload_to='static', blank=True)
+    image = models.TextField()
     time = models.FloatField()
     ingredients = models.ManyToManyField('Ingredient', related_name='recipes')
     user = models.ForeignKey('user.User', related_name='recipes', on_delete=models.CASCADE)
