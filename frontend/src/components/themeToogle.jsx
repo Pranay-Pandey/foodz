@@ -1,5 +1,3 @@
-// src/components/ThemeToggle.jsx
-
 import React from 'react';
 import { ActionIcon, useMantineColorScheme } from '@mantine/core';
 import { FaRegSun } from "react-icons/fa";
