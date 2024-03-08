@@ -8,7 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from recipe.models import Recipe, Ingredient, Favourites
+from recipe.models import Recipe, Ingredient, Favourites, Procedure
 from user.models import User
 from uuid import uuid4
 
@@ -51,6 +51,7 @@ def get_recipe(request):
         data = []
         for recipe in recipes:
             ingredients = recipe.ingredients.all()
+            procedure = recipe.procedure.all().order_by('order')
             data.append({
                 'key': str(uuid4()),
                 'id': recipe.id,
@@ -59,6 +60,7 @@ def get_recipe(request):
                 'image': recipe.image.url if recipe.image else None,
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
+                'procedure': [step.step for step in procedure],
                 'user': recipe.user.firstName,
                 'user_id': recipe.user.id,
                 'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
@@ -111,6 +113,10 @@ def create(request):
         for ingredient_name in data['ingredients'].split(','):
             ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
             recipe.ingredients.add(ingredient)
+        for i, step in enumerate(data['procedure'].split('\n')):
+            # Check if the step is empty or has only whitespace
+            if step.strip():
+                Procedure.objects.create(step=step, order=i+1, recipe=recipe)
         recipe.save()
     except KeyError as e:
         return JsonResponse({"error": f"{e} is required"}, status=400)
@@ -173,6 +179,7 @@ def recipe_from_ingredients(request):
     data = []
     for recipe in recipes:
         ingredients = recipe.ingredients.all()
+        procedure = recipe.procedure.all().order_by('order')
         data.append({
             'key': str(uuid4()),
             'id': recipe.id,
@@ -181,6 +188,7 @@ def recipe_from_ingredients(request):
             'image': recipe.image.url if recipe.image else None,
             'time': recipe.time,
             'ingredients': [ingredient.name for ingredient in ingredients],
+            'procedure': [step.step for step in procedure],
             'user': recipe.user.firstName,
             'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
         })
@@ -259,6 +267,7 @@ def get_favourites(request):
         for favourite in favourites:
             recipe = favourite.recipe
             ingredients = recipe.ingredients.all()
+            procedure = recipe.procedure.all().order_by('order')
             data.append({
                 'key': str(uuid4()),
                 'id': recipe.id,
@@ -267,6 +276,7 @@ def get_favourites(request):
                 'image': recipe.image.url if recipe.image else None,
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
+                'procedure': [step.step for step in procedure],
                 'user': recipe.user.firstName
             })
     except Exception as e:
@@ -313,6 +323,7 @@ def myrecipes(request):
         data = []
         for recipe in recipes:
             ingredients = recipe.ingredients.all()
+            procedure = recipe.procedure.all().order_by('order')
             data.append({
                 'key': str(uuid4()),
                 'id': recipe.id,
@@ -321,6 +332,7 @@ def myrecipes(request):
                 'image': recipe.image.url if recipe.image else None,
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
+                'procedure': [step.step for step in procedure],
                 'user': recipe.user.firstName,
                 'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
             })
@@ -406,6 +418,7 @@ def searchRecipeName(request):
     data = []
     for recipe in recipes:
         ingredients = recipe.ingredients.all()
+        procedure = recipe.procedure.all().order_by('order')
         data.append({
             'key': str(uuid4()),
             'id': recipe.id,
@@ -414,6 +427,7 @@ def searchRecipeName(request):
             'image': recipe.image.url if recipe.image else None,
             'time': recipe.time,
             'ingredients': [ingredient.name for ingredient in ingredients],
+            'procedure': [step.step for step in procedure],
             'user': recipe.user.firstName,
             'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
         })
@@ -431,6 +445,7 @@ def getRecipeFromId(request, id):
     try:
         recipe = Recipe.objects.get(id=id)
         ingredients = recipe.ingredients.all()
+        procedure = recipe.procedure.all().order_by('order')
         data = {
             'id': recipe.id,
             'title': recipe.title,
@@ -438,6 +453,7 @@ def getRecipeFromId(request, id):
             'image': recipe.image.url if recipe.image else None,
             'time': recipe.time,
             'ingredients': [ingredient.name for ingredient in ingredients],
+            'procedure': [step.step for step in procedure],
             'user': recipe.user.firstName,
             'user_id': recipe.user.id,
             'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
@@ -474,6 +490,9 @@ def editRecipe(request, id):
         for ingredient_name in data['ingredients'].split(','):
             ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
             recipe.ingredients.add(ingredient)
+        recipe.procedure.all().delete()
+        for i, step in enumerate(data['procedure'].split('\n')):
+            Procedure.objects.create(step=step, order=i+1, recipe=recipe)
         recipe.save()
     except Recipe.DoesNotExist:
         return JsonResponse({"error": "Recipe does not exist"}, status=404)
@@ -501,6 +520,9 @@ def deleteRecipe(request, id):
         # Clear the relationship between the recipe and its ingredients
         recipe.ingredients.clear()
 
+        # Delete the procedure steps
+        recipe.procedure.all().delete()
+
         # Delete ingredients that are not used by any other recipes
         for ingredient in Ingredient.objects.all():
             # If the ingredient is not used by any other recipe
@@ -511,8 +533,6 @@ def deleteRecipe(request, id):
         # Delete the recipe
         recipe.delete()
         
-        
-                
     except Recipe.DoesNotExist:
         return JsonResponse({"error": "Recipe does not exist"}, status=404)
 

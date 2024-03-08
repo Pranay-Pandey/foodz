@@ -29,3 +29,14 @@ class Favourites(models.Model):
 
     class Meta:
         db_table = 'favourites'
+
+class Procedure(models.Model):
+    step = models.TextField()
+    order = models.IntegerField()
+    recipe = models.ForeignKey(Recipe, related_name='procedure', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Step {self.order} of {self.recipe.title}'
+    
+    class Meta:
+        db_table = 'procedure'
