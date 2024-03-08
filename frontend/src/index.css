@@ -4,12 +4,29 @@
   box-sizing: border-box;
 }
 body {
-  background: #1c8ef9;
+  background: url('https://images.creativemarket.com/0.1.0/ps/6817836/1820/1213/m1/fpnw/wm1/ppjyzfwgu3bslgx649uvkwoixqqyaecyqhdumlgebllo3eacpfu8n08enom0fnhj-.jpg?1565781144&s=37b74a19c3153bef88295533b08f6155') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
   min-height: 100vh;
   display: flex;
   font-weight: 400;
   font-family: "Fira Sans", sans-serif;
 }
+
+body::after {
+  content: "";
+  background: inherit;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+  filter: blur(10px);
+}
+
 
 h1,
 h2,
