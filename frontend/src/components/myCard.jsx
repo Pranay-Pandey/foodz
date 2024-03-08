@@ -1,16 +1,17 @@
 import React from 'react';
 import { CiHeart } from 'react-icons/ci';
 import { MdFavorite } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import { Card, Image, Text, Group, Badge, Button, ActionIcon, MantineProvider } from '@mantine/core';
 import classes from '../styles/BadgeCard.module.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function MyCard(props) {
   const mockdata = {
     user: props.user,
     user_id: props.user_id,
     id: props.id,
-    image: "https://images.unsplash.com/photo-1437719417032-8595fd9e9dc6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
+    image: "https://cdn.dribbble.com/users/200279/screenshots/16510142/artboard_281_4x.png",
     title: props.title,
     description: props.description,
     badges: props.badges
@@ -34,9 +35,18 @@ export default function MyCard(props) {
       }
     }).then(response => {
       if (response.ok) {
+        if (favourite){
+          toast.success('Recipe removed from favourites', {
+            autoClose: 500,
+          });
+        }
+        else{
+          toast.success('Recipe added to favourites', {
+            autoClose: 500,
+          });
+        }
         setFavourite(!favourite);
         handler();
-
       }
       else{
         throw new Error('Error toggling favourite');
@@ -82,14 +92,17 @@ export default function MyCard(props) {
         </Card.Section>
 
         <Group mt="xs">
-          <Button radius="md" style={{ flex: 1 }}>
-            Show details
-          </Button>
+          < Link to={`/recipe/${mockdata.id}`} style={{ textDecoration: 'none' }}>
+            <Button radius="md" style={{ flex: 1 }}>
+              Show details
+            </Button>
+          </Link>
           <ActionIcon variant="default" radius="md" size={36} onClick={toogleFavourite} >
             {favourite ? <MdFavorite className={classes.like} stroke={1.5} /> : <CiHeart className={classes.like}  />}
           </ActionIcon>
         </Group>
-        <ToastContainer />
+        {/* <ToastContainer
+        /> */}
       </Card>
   );
 }

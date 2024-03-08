@@ -1,27 +1,15 @@
-import React, {useState} from "react";
-import { ToastContainer, toast } from 'react-toastify';
+import React, { useState } from "react";
+import { Paper, Grid, TextInput, Button, Container, Center, PasswordInput } from '@mantine/core';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import GridLoader from "react-spinners/GridLoader";
-
-const loaderStyle = {
-  display: "block",
-  margin: "0 auto",
-  borderColor: "red",
-  filter: "none",
-  position: "absolute",
-  left: "45%",
-};
 
 const Register = () => {
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
-
-  let [loading, setLoading] = useState(false);
-  let [color, setColor] = useState("#00ff00");
+  // if token in local storage, redirect to home
+  if (localStorage.getItem('token') !== null) {
+    window.location.href = '/'
+  }
+  
+  const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,8 +17,8 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    document.querySelector('body').style.filter = 'blur(5px)'
-    setLoading(true)
+    // Add loading to the body
+    document.body.classList.add('loading');
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/register`, {
       method: 'POST',
       body: JSON.stringify(form),
@@ -57,93 +45,67 @@ const Register = () => {
       }).catch((error) => {
         toast.error(`${error}`)
       }).finally(() => {
-        document.querySelector('body').style.filter = 'none'
-        setLoading(false)
+        document.body.classList.remove('loading');
       })
   }
 
+
   return (
-    <div className="auth-wrapper">
-    <div className="auth-inner">
-    <form onSubmit={handleSubmit}>
-      <h3>Register</h3>
-
-      <GridLoader
-        color={color}
-        loading={loading}
-        cssOverride={loaderStyle}
-        size={50}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-
-      <div className="mb-3">
-        <label>First name</label>
-        <input
-          id="firstName"
-          name="firstName"
-          value={form.firstName}
-          onChange={handleChange}
-          type="text"
-          className="form-control"
-          placeholder="First name"
-          required
-        />
-      </div>
-
-      <div className="mb-3">
-        <label>Last name</label>
-        <input type="text" 
-        id="lastName"
-        name="lastName"
-        value={form.lastName}
-        onChange={handleChange}
-        className="form-control" 
-        placeholder="Last name" 
-        required
-        />
-      </div>
-
-      <div className="mb-3">
-        <label>Email address</label>
-        <input
-          id="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          type="email"
-          className="form-control"
-          placeholder="Enter email"
-          required
-        />
-      </div>
-
-      <div className="mb-3">
-        <label>Password</label>
-        <input
-          id="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          type="password"
-          className="form-control"
-          placeholder="Enter password"
-          required
-        />
-      </div>
-
-      <div className="d-grid">
-        <button type="submit" className="btn btn-primary">
-          Sign Up
-        </button>
-      </div>
-      <p className="forgot-password text-right">
-        Already registered? <a href="/login">login</a>
-      </p>
-     <ToastContainer />
-    </form>
-    </div>
-    </div>
+    <Container size="xs" >
+      <Paper p="50" radius="lg" shadow="xs">
+        <Center>
+          <h1>Register</h1>
+        </Center>
+        <form onSubmit={handleSubmit}>
+          <Grid gutter="md" justify="center">
+            <Grid.Col span={12}>
+              <TextInput
+                label="First Name"
+                id="firstName"
+                name="firstName"
+                value={form.firstName}
+                onChange={handleChange}
+                required
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <TextInput
+                label="Last Name"
+                id="lastName"
+                name="lastName"
+                value={form.lastName}
+                onChange={handleChange}
+                required
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <TextInput
+                label="Email"
+                id="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <PasswordInput
+                label="Password"
+                id="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+            </Grid.Col>
+            <Grid.Col span={12}>
+              <Button fullWidth type="submit">Sign Up</Button>
+            </Grid.Col>
+          </Grid>
+          <p className="forgot-password text-right">Already registered? <a href="/login">login</a></p>
+        </form>
+      </Paper>
+    </Container>
   )
 }
 

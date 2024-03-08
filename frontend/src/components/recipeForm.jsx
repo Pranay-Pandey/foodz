@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextInput, NumberInput, FileInput, TagsInput, Button, Paper, Text } from '@mantine/core';
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function RecipeForm(props) {
