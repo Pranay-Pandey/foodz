@@ -165,7 +165,11 @@ def recipe_from_ingredients(request):
         ingredients = data['ingredients']
     except KeyError:
         return JsonResponse({"error": "Ingredients are required"}, status=400)
-    recipes = Recipe.objects.filter(ingredients__name__in=ingredients).distinct()
+    if len(ingredients) == 0:
+        # Return all recipes if no ingredients are provided
+        recipes = Recipe.objects.all()
+    else:
+        recipes = Recipe.objects.filter(ingredients__name__in=ingredients).distinct()
     data = []
     for recipe in recipes:
         ingredients = recipe.ingredients.all()
@@ -414,3 +418,102 @@ def searchRecipeName(request):
             'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
         })
     return JsonResponse(data, safe=False)
+
+
+def getRecipeFromId(request, id):
+    token = request.headers.get('Authorization')
+    if not token:
+        return JsonResponse({"error": "Token is required"}, status=400)
+    try:
+        payload = decode_token(token)
+    except:
+        return JsonResponse({"error": "Invalid token"}, status=400)
+    try:
+        recipe = Recipe.objects.get(id=id)
+        ingredients = recipe.ingredients.all()
+        data = {
+            'id': recipe.id,
+            'title': recipe.title,
+            'description': recipe.description,
+            'image': recipe.image.url if recipe.image else None,
+            'time': recipe.time,
+            'ingredients': [ingredient.name for ingredient in ingredients],
+            'user': recipe.user.firstName,
+            'user_id': recipe.user.id,
+            'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
+        }
+    except Recipe.DoesNotExist:
+        return JsonResponse({"error": "Recipe does not exist"}, status=404)
+    return JsonResponse(data, safe=False)
+
+@api_view(['PUT'])
+@csrf_exempt
+@require_http_methods(['PUT'])
+def editRecipe(request, id):
+    token = request.headers.get('Authorization')
+    if not token:
+        return JsonResponse({"error": "Token is required"}, status=400)
+    try:
+        payload = decode_token(token)
+        if payload['role'] != 'user':
+            return JsonResponse({"error": "Invalid token"}, status=400)
+    except:
+        return JsonResponse({"error": "Invalid token"}, status=400)
+    try:
+        recipe = Recipe.objects.get(id=id)
+        if recipe.user.id != payload['id']:
+            return JsonResponse({"error": "You are not authorized to edit this recipe"}, status=400)
+        data = request.data
+        recipe.title = data['title']
+        recipe.description = data['description']
+        recipe.time = data['time']
+        if 'image' in request.FILES and request.FILES['image']:
+            recipe.image = request.FILES['image']
+        recipe.save()
+        recipe.ingredients.clear()
+        for ingredient_name in data['ingredients'].split(','):
+            ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
+            recipe.ingredients.add(ingredient)
+        recipe.save()
+    except Recipe.DoesNotExist:
+        return JsonResponse({"error": "Recipe does not exist"}, status=404)
+    return JsonResponse({"message": "Recipe updated successfully"}, status=200)
+
+
+@api_view(['DELETE'])
+@csrf_exempt
+@require_http_methods(['DELETE'])
+def deleteRecipe(request, id):
+    token = request.headers.get('Authorization')
+    if not token:
+        return JsonResponse({"error": "Token is required"}, status=400)
+    try:
+        payload = decode_token(token)
+        if payload['role'] != 'user':
+            return JsonResponse({"error": "Invalid token"}, status=400)
+    except:
+        return JsonResponse({"error": "Invalid token"}, status=400)
+    try:
+        recipe = Recipe.objects.get(id=id)
+        if recipe.user.id != payload['id']:
+            return JsonResponse({"error": "You are not authorized to delete this recipe"}, status=400)
+        
+        # Clear the relationship between the recipe and its ingredients
+        recipe.ingredients.clear()
+
+        # Delete ingredients that are not used by any other recipes
+        for ingredient in Ingredient.objects.all():
+            # If the ingredient is not used by any other recipe
+            if not ingredient.recipes.all():
+                # Delete the ingredient
+                ingredient.delete()
+        
+        # Delete the recipe
+        recipe.delete()
+        
+        
+                
+    except Recipe.DoesNotExist:
+        return JsonResponse({"error": "Recipe does not exist"}, status=404)
+
+    return JsonResponse({"message": "Recipe deleted successfully"}, status=200)

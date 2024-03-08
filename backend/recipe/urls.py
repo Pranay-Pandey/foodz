@@ -10,4 +10,7 @@ urlpatterns = [
     path('my_recipes', views.myrecipes),
     path('ingredients', views.getIngredients),
     path('search', views.searchRecipeName),
+    path('get_recipe_by_id/<int:id>', views.getRecipeFromId),
+    path('update/<int:id>', views.editRecipe),
+    path('delete/<int:id>', views.deleteRecipe),
 ]
