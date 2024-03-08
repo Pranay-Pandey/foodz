@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Paper, Grid, TextInput, Button, Container, Center, PasswordInput } from '@mantine/core';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Register = () => {
@@ -105,6 +105,7 @@ const Register = () => {
           <p className="forgot-password text-right">Already registered? <a href="/login">login</a></p>
         </form>
       </Paper>
+      <ToastContainer />
     </Container>
   )
 }

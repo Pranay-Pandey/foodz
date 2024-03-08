@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Paper, Grid, TextInput, Button, Container, Center, PasswordInput } from '@mantine/core';
-import { toast } from 'react-toastify';
+import { toast ,ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
@@ -93,6 +93,7 @@ const Login = () => {
           </p>
         </form>
       </Paper>
+      <ToastContainer />
     </Container>
   )
 }
