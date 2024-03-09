@@ -128,8 +128,3 @@ def login(request):
             return JsonResponse({"error": "Invalid password"}, status=400)
     except User.DoesNotExist:
         return JsonResponse({"error": "User does not exist"}, status=404)
-
-
-def deleteALlUsers(request):
-    User.objects.all().delete()
-    return JsonResponse({"message": "All users deleted successfully"}, status=200)

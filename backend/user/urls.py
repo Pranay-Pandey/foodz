@@ -3,6 +3,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('register', views.register),
-    path('login', views.login),
-    path('delete', views.deleteALlUsers),
+    path('login', views.login)
 ]
