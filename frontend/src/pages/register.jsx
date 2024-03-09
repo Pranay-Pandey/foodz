@@ -23,10 +23,10 @@ const Register = () => {
     var derived_key = CryptoJS.enc.Base64.parse(`${import.meta.env.VITE_ENCRYPTION_KEY}`)
     var iv = CryptoJS.enc.Utf8.parse(`${import.meta.env.VITE_ENCRYPTION_IV}`);
     var hashedPassword = CryptoJS.AES.encrypt(form.password, derived_key, {iv: iv, mode: CryptoJS.mode.CBC}).toString();
-    form.password = hashedPassword;
+    const registerForm = { firstName: form.firstName, lastName: form.lastName, email: form.email, password: hashedPassword };
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/register`, {
       method: 'POST',
-      body: JSON.stringify(form),
+      body: JSON.stringify(registerForm),
       headers: {
         'Content-Type': 'application/json'
       }
