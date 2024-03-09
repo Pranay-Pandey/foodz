@@ -29,6 +29,7 @@ import shortuuid
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
                 'time': openapi.Schema(type=openapi.TYPE_STRING),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+                'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
@@ -81,6 +82,7 @@ def get_recipe(request):
             'description': openapi.Schema(type=openapi.TYPE_STRING),
             'time': openapi.Schema(type=openapi.TYPE_STRING),
             'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+            'procedure': openapi.Schema(type=openapi.TYPE_STRING),
             'image': openapi.Schema(type=openapi.TYPE_FILE)
         },
         required=['title', 'description', 'time', 'ingredients']
@@ -111,20 +113,48 @@ def create(request):
             user=user,
             image=data['image']
         )
-        for ingredient_name in data['ingredients'].split(','):
-            ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
-            recipe.ingredients.add(ingredient)
-        for i, step in enumerate(data['procedure'].split('\n')):
-            # Check if the step is empty or has only whitespace
-            if step.strip():
-                Procedure.objects.create(step=step, order=i+1, recipe=recipe)
-        recipe.save()
-    except KeyError as e:
-        return JsonResponse({"error": f"{e} is required"}, status=400)
+        ingredients = [Ingredient.objects.get_or_create(name=name)[0] for name in data['ingredients'].split(',')]
+        recipe.ingredients.add(*ingredients)
+        procedures = [Procedure(step=step, order=i+1, recipe=recipe) for i, step in enumerate(data['procedure'].split('\n')) if step.strip()]
+        Procedure.objects.bulk_create(procedures)
     except ValidationError as e:
         return JsonResponse({"error": e.message_dict}, status=400)
     
     return JsonResponse({"message": "Recipe created successfully"}, status=201)
+# def create(request):
+#     token = request.headers.get('Authorization')
+#     if not token:
+#         return JsonResponse({"error": "Token is required"}, status=400)
+#     try:
+#         payload = decode_token(token)
+#         if payload['role'] != 'user':
+#             return JsonResponse({"error": "Invalid token"}, status=400)
+#     except:
+#         return JsonResponse({"error": "Invalid token"}, status=400)
+#     try:
+#         data = request.data
+#         user = User.objects.get(id=payload['id'])
+#         recipe = Recipe.objects.create(
+#             title=data['title'],
+#             description=data['description'],
+#             time=data['time'],
+#             user=user,
+#             image=data['image']
+#         )
+#         for ingredient_name in data['ingredients'].split(','):
+#             ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
+#             recipe.ingredients.add(ingredient)
+#         for i, step in enumerate(data['procedure'].split('\n')):
+#             # Check if the step is empty or has only whitespace
+#             if step.strip():
+#                 Procedure.objects.create(step=step, order=i+1, recipe=recipe)
+#         recipe.save()
+#     except KeyError as e:
+#         return JsonResponse({"error": f"{e} is required"}, status=400)
+#     except ValidationError as e:
+#         return JsonResponse({"error": e.message_dict}, status=400)
+    
+#     return JsonResponse({"message": "Recipe created successfully"}, status=201)
 
 @swagger_auto_schema(
     tags=['Recipe'],
@@ -149,6 +179,7 @@ def create(request):
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
                 'time': openapi.Schema(type=openapi.TYPE_STRING),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+                'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
@@ -244,6 +275,7 @@ def favourite(request, id):
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
                 'time': openapi.Schema(type=openapi.TYPE_STRING),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+                'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING)
             }
         )
@@ -300,6 +332,7 @@ def get_favourites(request):
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
                 'time': openapi.Schema(type=openapi.TYPE_STRING),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+                'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
@@ -392,6 +425,7 @@ def getIngredients(request):
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
                 'time': openapi.Schema(type=openapi.TYPE_STRING),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+                'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
@@ -434,7 +468,30 @@ def searchRecipeName(request):
         })
     return JsonResponse(data, safe=False)
 
-
+@swagger_auto_schema(
+    tags=['Recipe'],
+    method='get',
+    manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
+    responses={200: openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+            'title': openapi.Schema(type=openapi.TYPE_STRING),
+            'description': openapi.Schema(type=openapi.TYPE_STRING),
+            'image': openapi.Schema(type=openapi.TYPE_STRING),
+            'time': openapi.Schema(type=openapi.TYPE_STRING),
+            'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+            'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
+            'user': openapi.Schema(type=openapi.TYPE_STRING),
+            'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
+            'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
+        }
+    ), 
+    400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
+})
+@api_view(['GET'])
+@csrf_exempt
+@require_http_methods(['GET'])
 def getRecipeFromId(request, id):
     token = request.headers.get('Authorization')
     if not token:
@@ -463,6 +520,25 @@ def getRecipeFromId(request, id):
         return JsonResponse({"error": "Recipe does not exist"}, status=404)
     return JsonResponse(data, safe=False)
 
+@swagger_auto_schema(
+    tags=['Recipe'],
+    method='put',
+    manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
+    request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'title': openapi.Schema(type=openapi.TYPE_STRING),
+            'description': openapi.Schema(type=openapi.TYPE_STRING),
+            'time': openapi.Schema(type=openapi.TYPE_STRING),
+            'ingredients': openapi.Schema(type=openapi.TYPE_STRING),
+            'procedure': openapi.Schema(type=openapi.TYPE_STRING),
+            'image': openapi.Schema(type=openapi.TYPE_STRING)
+        },
+        required=['title', 'description', 'time', 'ingredients', 'procedure']
+    ),
+    responses={200: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}),
+    400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
+})
 @api_view(['PUT'])
 @csrf_exempt
 @require_http_methods(['PUT'])
@@ -500,7 +576,13 @@ def editRecipe(request, id):
         return JsonResponse({"error": "Recipe does not exist"}, status=404)
     return JsonResponse({"message": "Recipe updated successfully"}, status=200)
 
-
+@swagger_auto_schema(
+    tags=['Recipe'],
+    method='delete',
+    manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
+    responses={200: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}),
+    400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
+})
 @api_view(['DELETE'])
 @csrf_exempt
 @require_http_methods(['DELETE'])
