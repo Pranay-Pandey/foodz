@@ -13,6 +13,7 @@ import shortuuid
 @swagger_auto_schema(
     tags=['Recipe'],
     method='post',
+    operation_description="Add or remove a recipe from favourites. If the recipe is already in the user's favourites, it will be removed. If not, it will be added.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     responses={200: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}), 
     400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
@@ -46,6 +47,7 @@ def favourite(request, id):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='get',
+    operation_description="Get all the recipes in the user's favourites",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     responses={200: openapi.Schema(
         type=openapi.TYPE_ARRAY,

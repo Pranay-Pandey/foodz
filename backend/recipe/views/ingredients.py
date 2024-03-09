@@ -13,6 +13,7 @@ import shortuuid
 @swagger_auto_schema(
     tags=['Recipe'],
     method='post',
+    operation_description="Get all the recipes that have at least one of the provided ingredients. If no ingredients are provided, all recipes will be returned.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -84,6 +85,7 @@ def recipe_from_ingredients(request):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='get',
+    operation_description="Get all the ingredients in the database",
     responses={200: openapi.Schema(
         type=openapi.TYPE_ARRAY,
         items=openapi.Schema(

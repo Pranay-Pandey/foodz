@@ -13,6 +13,7 @@ from user.models import User
 @swagger_auto_schema(
     tags=['User'],
     method='post',
+    operation_description="Register a new user",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -76,6 +77,7 @@ def register(request):
 @swagger_auto_schema(
     tags=['User'],
     method='post',
+    operation_description="Login a user",
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={

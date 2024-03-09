@@ -14,6 +14,7 @@ import shortuuid
 @swagger_auto_schema(
     tags=['Recipe'],
     method='get',
+    operation_description="Get all the recipes made by the user. The user is identified by the token provided in the header.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     responses={200: openapi.Schema(
         type=openapi.TYPE_ARRAY,
@@ -72,6 +73,7 @@ def myrecipes(request):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='post',
+    operation_description="Search for recipes by name of the recipe. The name is provided in the request body. The user is identified by the token provided in the header. The identification of user is necessary to check if the recipe is in the user's favourites.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -139,6 +141,7 @@ def searchRecipeName(request):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='get',
+    operation_description="Get a recipe by its id. The id is provided in the URL. The user is identified by the token provided in the header. The identification of user is necessary to check if the recipe is in the user's favourites.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     responses={200: openapi.Schema(
         type=openapi.TYPE_OBJECT,

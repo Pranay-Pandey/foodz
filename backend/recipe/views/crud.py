@@ -15,6 +15,7 @@ from django.db import transaction
 @swagger_auto_schema(
     tags=['Recipe'],
     method='get',
+    operation_description="Get all recipes in the database along with the user who created them and whether the recipe is a favourite of the user or not.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     responses={200: openapi.Schema(
         type=openapi.TYPE_ARRAY,
@@ -75,6 +76,7 @@ def get_recipe(request):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='post',
+    operation_description="Create a recipe. The ingredients should be separated by a comma. The procedure should be separated by a new line. The imageURL is optional.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -127,6 +129,7 @@ def create(request):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='put',
+    operation_description="Edit a recipe. The ingredients should be separated by a comma. The procedure should be separated by a new line. The imageURL is optional.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -195,6 +198,7 @@ def editRecipe(request, id):
 @swagger_auto_schema(
     tags=['Recipe'],
     method='delete',
+    operation_description="Delete a recipe. The recipe will be deleted along with its ingredients and procedure steps. Ingredients that are not used by any other recipes will also be deleted.",
     manual_parameters=[openapi.Parameter('Authorization', in_=openapi.IN_HEADER, type=openapi.TYPE_STRING, required=True)],
     responses={200: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}),
     400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
