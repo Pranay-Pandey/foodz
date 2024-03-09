@@ -121,40 +121,6 @@ def create(request):
         return JsonResponse({"error": e.message_dict}, status=400)
     
     return JsonResponse({"message": "Recipe created successfully"}, status=201)
-# def create(request):
-#     token = request.headers.get('Authorization')
-#     if not token:
-#         return JsonResponse({"error": "Token is required"}, status=400)
-#     try:
-#         payload = decode_token(token)
-#         if payload['role'] != 'user':
-#             return JsonResponse({"error": "Invalid token"}, status=400)
-#     except:
-#         return JsonResponse({"error": "Invalid token"}, status=400)
-#     try:
-#         data = request.data
-#         user = User.objects.get(id=payload['id'])
-#         recipe = Recipe.objects.create(
-#             title=data['title'],
-#             description=data['description'],
-#             time=data['time'],
-#             user=user,
-#             image=data['image']
-#         )
-#         for ingredient_name in data['ingredients'].split(','):
-#             ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
-#             recipe.ingredients.add(ingredient)
-#         for i, step in enumerate(data['procedure'].split('\n')):
-#             # Check if the step is empty or has only whitespace
-#             if step.strip():
-#                 Procedure.objects.create(step=step, order=i+1, recipe=recipe)
-#         recipe.save()
-#     except KeyError as e:
-#         return JsonResponse({"error": f"{e} is required"}, status=400)
-#     except ValidationError as e:
-#         return JsonResponse({"error": e.message_dict}, status=400)
-    
-#     return JsonResponse({"message": "Recipe created successfully"}, status=201)
 
 @swagger_auto_schema(
     tags=['Recipe'],
