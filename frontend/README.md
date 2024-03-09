@@ -9,7 +9,7 @@ To set up the frontend locally, follow these steps:
 - Clone the repository:
 
     ```bash
-    git clone https://github.com/Pranay-Pandey/foodz
+    git clone https://github.com/Pranay-Pandey/foodz.git
     ```
 - Navigate to the frontend directory:
 
@@ -21,6 +21,13 @@ To set up the frontend locally, follow these steps:
     ```bash
     npm install
     ```
+- Make .env file and add the following to it
+    ```bash
+    VITE_BACKEND_BASE_URL = 'http://localhost:8000'
+    VITE_PASSWORD_SECRET_KEY = 
+    VITE_ENCRYPTION_KEY = 
+    VITE_ENCRYPTION_IV = 
+    ``` 
 
 - Start the development server:
     
