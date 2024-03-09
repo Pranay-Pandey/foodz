@@ -61,7 +61,7 @@ export default function MyCard(props) {
       }
     }).then(response => {
       if (response.ok) {
-        if (!favourite){
+        if (favourite){
           toast.success('Recipe removed from favourites', {
             autoClose: 500,
           });
