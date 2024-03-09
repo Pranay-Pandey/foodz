@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MyCard from '../components/myCard';
-import ProfileCard from '../components/profile';
-import { Tabs, rem, Button, Group, MultiSelect, Collapse, Paper, Grid, TextInput, Center } from '@mantine/core';
-import { MdFavorite, MdBroadcastOnPersonal } from 'react-icons/md';
-import { FaUserCircle } from "react-icons/fa";
+import {  Button, Group, Collapse } from '@mantine/core';
 import RecipeForm from '../components/recipeForm';
 import { useDisclosure } from '@mantine/hooks';
-import { ToastContainer } from 'react-toastify';
-import { BiSolidDish } from "react-icons/bi";
-import RecipeSearch from '../components/recipeSearch';
-import Favourites from '../components/favourites';
 
 const MyRecipes = (props) => {
     const [opened, { toggle }] = useDisclosure(false);

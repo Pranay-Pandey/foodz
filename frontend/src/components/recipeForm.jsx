@@ -80,12 +80,6 @@ function RecipeForm(props) {
           value={image}
           onChange={(event) => setImage(event.currentTarget.value)}
         />
-        {/* <FileInput
-          clearable
-          placeholder="Upload image"
-          label="Image"
-          onChange={(file) => setImage(file)}
-        /> */}
         <TagsInput
           label="Ingredients"
           placeholder="Enter ingredients (Enter to add)"
@@ -107,7 +101,6 @@ function RecipeForm(props) {
           Submit
         </Button>
       </form>
-      {/* <ToastContainer /> */}
     </Paper>
   );
 }

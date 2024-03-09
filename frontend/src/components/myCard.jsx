@@ -99,9 +99,6 @@ export default function MyCard(props) {
             <Text fz="lg" fw={500}>
               {title}
             </Text>
-            {/* <Badge size="sm" variant="light">
-              {country}
-            </Badge> */}
           </Group>
           <Text fz="sm" mt="xs">
             {description}
@@ -132,8 +129,6 @@ export default function MyCard(props) {
               </Button>
           }
         </Group>
-        {/* <ToastContainer
-        /> */}
       </Card>
   );
 }
