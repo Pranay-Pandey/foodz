@@ -16,7 +16,32 @@ export default function MyCard(props) {
     description: props.description,
     badges: props.badges
   };
+  const owner = props.myRecipe ? true : false;
   const handler = props.handler;
+
+  const handleDelete =  () => {
+    document.body.classList.add('loading');
+    fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/delete/${mockdata.id}`, { 
+      method: 'DELETE',
+      headers: {
+        Authorization: `${localStorage.getItem('token')}`,
+      },
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Error deleting recipe');
+      }
+      toast.success('Recipe Deleted');
+      props.onDelete();
+      return response.json()})
+    .catch((error) => {
+      console.error(error);
+      toast.error('Error deleting recipe');
+    }).finally(() => {
+      // Remove loading from the body
+      document.body.classList.remove('loading');
+    });
+  };
 
   if (props.image && props.image !== ''){
     mockdata.image = `${props.image}`;
@@ -100,6 +125,11 @@ export default function MyCard(props) {
           <ActionIcon variant="default" radius="md" size={36} onClick={toogleFavourite} >
             {favourite ? <MdFavorite className={classes.like} stroke={1.5} /> : <CiHeart className={classes.like}  />}
           </ActionIcon>
+          {owner && 
+              <Button radius="md" style={{ flex: 1, backgroundColor: "red" }} onClick={handleDelete}>
+                Delete
+              </Button>
+          }
         </Group>
         {/* <ToastContainer
         /> */}

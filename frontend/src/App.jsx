@@ -11,32 +11,27 @@ import Navbar from './components/navbar';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 import '@mantine/core/styles.css';
-
 import { MantineProvider } from '@mantine/core';
 
 function App() {
   return (
-    <MantineProvider >
+    <MantineProvider>
       <Router>
         <div className="App">
           <Navbar />
-          
-          < div style={{ marginTop: '5rem' } } />
+          <div style={{ marginTop: '5rem' }} />
           <Routes>
-            
-                <Route exact path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/recipe/:id" element={<RecipePage />} />
-                <Route path="/logout" element={<Logout />} />
-              
+            <Route exact path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/recipe/:id" element={<RecipePage />} />
+            <Route path="/logout" element={<Logout />} />
           </Routes>
         </div>
+        <div id="overlay"></div> {/* Move the overlay here */}
       </Router>
-      
-      {/* <ToastContainer /> */}
     </MantineProvider>
-  )
+  );
 }
 
 export default App

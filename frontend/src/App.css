@@ -1,6 +1,19 @@
-body.loading {
-  filter: blur(5px); /* Apply blur effect */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  backdrop-filter: blur(0px);
+  transition: backdrop-filter 0.3s ease;
+  z-index: 1000; /* Ensure the overlay is above other elements */
 }
+
+body.loading #overlay {
+  backdrop-filter: blur(5px);
+}
+
 
 .App {
   /* text-align: center; */

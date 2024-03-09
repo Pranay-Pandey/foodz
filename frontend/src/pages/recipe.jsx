@@ -63,7 +63,7 @@ function RecipePage() {
     formData.append('title', recipe.title);
     formData.append('description', recipe.description);
     formData.append('time', recipe.time);
-    formData.append('image', newImage);
+    formData.append('image', image);
     let ing = [];
     for (let i = 0; i < recipe.ingredients.length; i++) {
       ing.push(recipe.ingredients[i]);
