@@ -52,6 +52,7 @@ export default function MyCard(props) {
 
   const toogleFavourite = () => {
     // Make the API call to add or remove the recipe from favourites
+    setFavourite(!favourite);
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/favourite/${mockdata.id}`, {
       method: 'POST',
       headers: {
@@ -60,7 +61,7 @@ export default function MyCard(props) {
       }
     }).then(response => {
       if (response.ok) {
-        if (favourite){
+        if (!favourite){
           toast.success('Recipe removed from favourites', {
             autoClose: 500,
           });
@@ -70,13 +71,13 @@ export default function MyCard(props) {
             autoClose: 500,
           });
         }
-        setFavourite(!favourite);
         handler();
       }
       else{
         throw new Error('Error toggling favourite');
       }
     }).catch(error => {
+      setFavourite(!favourite);
       console.error('Error:', error);
       toast.error('Error adding recipe to favourites');
     });

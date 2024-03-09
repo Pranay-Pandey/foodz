@@ -71,6 +71,8 @@ function RecipePage() {
     formData.append('ingredients', ing);
     formData.append('procedure', recipe.procedure.join('\n'));
 
+    // Add loading to the body
+    document.body.classList.add('loading');
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/recipe/update/${id}`, { 
       method: 'PUT',
       body: formData,
@@ -87,6 +89,8 @@ function RecipePage() {
       toast.error('Error updating recipe');
     }).finally(() => {
       setEditing(false);
+      // Remove loading from the body
+      document.body.classList.remove('loading');
     });
   };
 
