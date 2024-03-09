@@ -1,4 +1,4 @@
 from django.shortcuts import HttpResponse
 
-def doctor(request):
+def index(request):
     return HttpResponse("Welcome to Foodz API!")
