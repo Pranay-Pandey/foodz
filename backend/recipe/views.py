@@ -10,8 +10,8 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from recipe.models import Recipe, Ingredient, Favourites, Procedure
 from user.models import User
-# from uuid import uuid4
 import shortuuid
+from django.db import transaction
 
 @swagger_auto_schema(
     tags=['Recipe'],
@@ -93,6 +93,7 @@ def get_recipe(request):
 @api_view(['POST'])
 @csrf_exempt
 @require_http_methods(['POST'])
+@transaction.atomic
 def create(request):
     token = request.headers.get('Authorization')
     if not token:
