@@ -197,7 +197,7 @@ function RecipePage() {
           </ActionIcon>
       </Group>
       <div style={{ height: 10 }}></div>
-      {editing ? (
+      {/* {editing ? (
         <div style={{ position: 'relative'}}>
           <Image src={image} alt={title}  style={{ width: "fit-content", margin:"auto", height: 300, maxWidth: "600px" }} />
           <ActionIcon variant="transparent" radius="xl" style={{ position: 'absolute', top: 10, right: 10 }} onClick={handleImageRemove}>
@@ -213,7 +213,24 @@ function RecipePage() {
         </div>
       ) : (
         <Image src={image} alt={title}  style={{ width: "fit-content", margin:"auto", height: 300, maxWidth: "600px" }} />
+      )} */}
+      {editing ? (
+        <div style={{ position: 'relative', maxWidth: '100%' }}>
+          <Image src={image} alt={title} style={{ width: '100%', height: 'auto', maxWidth: '600px', margin: 'auto' }} />
+          <ActionIcon variant="transparent" radius="xl" style={{ position: 'absolute', top: 10, right: 10 }} onClick={handleImageRemove}>
+            <FaTimes />
+          </ActionIcon>
+          <TextInput
+            label="Image"
+            placeholder="Enter image URL"
+            value={image}
+            onChange={(event) => setRecipe({ ...recipe, image: event.currentTarget.value })}
+          />
+        </div>
+      ) : (
+        <Image src={image} alt={title} style={{ width: '100%', height: 'auto', maxWidth: '600px', margin: 'auto' }} />
       )}
+
       {editing ? (
         <TextInput
           label="Description"

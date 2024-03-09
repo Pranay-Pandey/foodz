@@ -6,29 +6,42 @@ import { FaRegUser } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import { FaHome } from "react-icons/fa";
 import ThemeToggle from "./themeToogle";
+import { useMediaQuery } from '@mantine/hooks';
 
 const Navbar = () => {
     const [hovered, setHovered] = useState([false, false, false, false]);
     const handleMouseEnter = (index) => {
-        let newHovered = [...hovered];
-        newHovered[index] = true;
-        setHovered(newHovered);
-    }
+        setHovered((prevHovered) => {
+          const newHovered = [...prevHovered];
+          newHovered[index] = true;
+          return newHovered;
+        });
+      }
 
-    const handleMouseLeave = (index) => {
-        let newHovered = [...hovered];
-        newHovered[index] = false;
-        setHovered(newHovered);
-    }
+      const handleMouseLeave = (index) => {
+        setHovered((prevHovered) => {
+          const newHovered = [...prevHovered];
+          newHovered[index] = false;
+          return newHovered;
+        });
+      }
     
+    const isSmallScreen = useMediaQuery('(max-width: 768px)');
     return (
-        <Container size="full" pt={4} pb={6} pl={150} pr={150} style={{ backgroundColor: "var(--mantine-color-body)", position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100 }}>
+        <Container 
+            size="full"
+            pt={4}
+            pb={6}
+            pl={isSmallScreen ? 20 : 150}
+            pr={isSmallScreen ? 20 : 150}
+            style={{ backgroundColor: "var(--mantine-color-body)", position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100 }}
+      >
             <Paper p="md" shadow="xs" style={{ borderRadius: '0',
             border: "none", margin: "none", outline: "none", boxShadow: "none" }}>
                 <Grid justify="center">
                     <Grid.Col span={12} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Link to={'/'} style={{ textDecoration: 'none' , color: "var(--mantine-color-text)"}}>
-                            <Text size="xl" weight={500} style={{ paddingLeft: '2rem' }}>
+                            <Text size="xl" weight={500} >
                                 Foodz
                             </Text>
                         </Link>

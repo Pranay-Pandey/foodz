@@ -42,13 +42,13 @@ const Favourites = (props) => {
     return (
         <>
             {favourites.length > 0 ?
-                <div style={
-                    {
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                        gap: '20px',
-                        marginTop: '2rem'
-                    }}>
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    gap: '20px',
+                    marginTop: '2rem'
+                }}>
                     {favourites.map((recipe) => {
                         return <MyCard key={recipe.key}
                             id={recipe.id}
@@ -58,20 +58,19 @@ const Favourites = (props) => {
                             badges={recipe.ingredients}
                             user={recipe.user}
                             user_id={recipe.user_id}
-                            handler={()=>removeFavourite(recipe.id)}
+                            handler={() => removeFavourite(recipe.id)}
                             favourite={true}
                         />
                     })}
-
                 </div>
                 :
                 <Center mt={10}>
                     <h1 style={{ color: "var(--bs-highlight-bg)" }}>No favourites found</h1>
                 </Center>
             }
-        
         </>
     )
+    
 }
 
 export default Favourites;
