@@ -27,10 +27,11 @@ from django.db import transaction
                 'title': openapi.Schema(type=openapi.TYPE_STRING),
                 'description': openapi.Schema(type=openapi.TYPE_STRING),
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
-                'time': openapi.Schema(type=openapi.TYPE_STRING),
+                'time': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
+                'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
         )
@@ -80,12 +81,12 @@ def get_recipe(request):
         properties={
             'title': openapi.Schema(type=openapi.TYPE_STRING),
             'description': openapi.Schema(type=openapi.TYPE_STRING),
-            'time': openapi.Schema(type=openapi.TYPE_STRING),
+            'time': openapi.Schema(type=openapi.TYPE_INTEGER),
             'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
             'procedure': openapi.Schema(type=openapi.TYPE_STRING),
             'image': openapi.Schema(type=openapi.TYPE_STRING)
         },
-        required=['title', 'description', 'time', 'ingredients']
+        required=['title', 'description', 'time', 'ingredients', 'procedure']
     ),
     responses={201: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}), 
     400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
@@ -144,10 +145,11 @@ def create(request):
                 'title': openapi.Schema(type=openapi.TYPE_STRING),
                 'description': openapi.Schema(type=openapi.TYPE_STRING),
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
-                'time': openapi.Schema(type=openapi.TYPE_STRING),
+                'time': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
+                'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
         )
@@ -240,10 +242,12 @@ def favourite(request, id):
                 'title': openapi.Schema(type=openapi.TYPE_STRING),
                 'description': openapi.Schema(type=openapi.TYPE_STRING),
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
-                'time': openapi.Schema(type=openapi.TYPE_STRING),
+                'time': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
-                'user': openapi.Schema(type=openapi.TYPE_STRING)
+                'user': openapi.Schema(type=openapi.TYPE_STRING),
+                'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                'user_id': openapi.Schema(type=openapi.TYPE_INTEGER)
             }
         )
     ), 
@@ -277,7 +281,8 @@ def get_favourites(request):
                 'time': recipe.time,
                 'ingredients': [ingredient.name for ingredient in ingredients],
                 'procedure': [step.step for step in procedure],
-                'user': recipe.user.firstName
+                'user': recipe.user.firstName,
+                'user_id': recipe.user.id,
             })
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=404)
@@ -297,7 +302,7 @@ def get_favourites(request):
                 'title': openapi.Schema(type=openapi.TYPE_STRING),
                 'description': openapi.Schema(type=openapi.TYPE_STRING),
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
-                'time': openapi.Schema(type=openapi.TYPE_STRING),
+                'time': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
@@ -390,10 +395,11 @@ def getIngredients(request):
                 'title': openapi.Schema(type=openapi.TYPE_STRING),
                 'description': openapi.Schema(type=openapi.TYPE_STRING),
                 'image': openapi.Schema(type=openapi.TYPE_STRING),
-                'time': openapi.Schema(type=openapi.TYPE_STRING),
+                'time': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
                 'user': openapi.Schema(type=openapi.TYPE_STRING),
+                'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
                 'favourite': openapi.Schema(type=openapi.TYPE_BOOLEAN)
             }
         )
@@ -431,6 +437,7 @@ def searchRecipeName(request):
             'ingredients': [ingredient.name for ingredient in ingredients],
             'procedure': [step.step for step in procedure],
             'user': recipe.user.firstName,
+            'user_id': recipe.user.id,
             'favourite': recipe.favourites.filter(user__id=payload['id']).exists()
         })
     return JsonResponse(data, safe=False)
@@ -446,7 +453,7 @@ def searchRecipeName(request):
             'title': openapi.Schema(type=openapi.TYPE_STRING),
             'description': openapi.Schema(type=openapi.TYPE_STRING),
             'image': openapi.Schema(type=openapi.TYPE_STRING),
-            'time': openapi.Schema(type=openapi.TYPE_STRING),
+            'time': openapi.Schema(type=openapi.TYPE_INTEGER),
             'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
             'procedure': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
             'user': openapi.Schema(type=openapi.TYPE_STRING),
@@ -496,12 +503,12 @@ def getRecipeFromId(request, id):
         properties={
             'title': openapi.Schema(type=openapi.TYPE_STRING),
             'description': openapi.Schema(type=openapi.TYPE_STRING),
-            'time': openapi.Schema(type=openapi.TYPE_STRING),
+            'time': openapi.Schema(type=openapi.TYPE_INTEGER),
             'ingredients': openapi.Schema(type=openapi.TYPE_STRING),
             'procedure': openapi.Schema(type=openapi.TYPE_STRING),
             'image': openapi.Schema(type=openapi.TYPE_STRING)
         },
-        required=['title', 'description', 'time', 'ingredients', 'procedure']
+        required=['title', 'description', 'time', 'ingredients', 'procedure', 'image']
     ),
     responses={200: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'message': openapi.Schema(type=openapi.TYPE_STRING)}),
     400: openapi.Schema(type=openapi.TYPE_OBJECT, properties={'error': openapi.Schema(type=openapi.TYPE_STRING)})
@@ -529,6 +536,8 @@ def editRecipe(request, id):
         recipe.time = data['time']
         recipe.image = data['image']
         recipe.save()
+        # Get the current ingredients
+        current_ingredients = recipe.ingredients.all()
         recipe.ingredients.clear()
         for ingredient_name in data['ingredients'].split(','):
             ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
@@ -537,8 +546,16 @@ def editRecipe(request, id):
         for i, step in enumerate(data['procedure'].split('\n')):
             Procedure.objects.create(step=step, order=i+1, recipe=recipe)
         recipe.save()
+        # Check if the previous ingredients are not used by any other recipe, if so, delete them
+        for ingredient in current_ingredients:
+            if not ingredient.recipes.all():
+                ingredient.delete()
     except Recipe.DoesNotExist:
         return JsonResponse({"error": "Recipe does not exist"}, status=404)
+    except ValidationError as e:
+        return JsonResponse({"error": e.message_dict}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
     return JsonResponse({"message": "Recipe updated successfully"}, status=200)
 
 @swagger_auto_schema(
