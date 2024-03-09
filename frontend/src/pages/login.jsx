@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Paper, Grid, TextInput, Button, Container, Center, PasswordInput } from '@mantine/core';
 import { toast ,ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CryptoJS from 'crypto-js';
 
 const Login = () => {
   // if token in local storage, redirect to home
@@ -24,6 +25,8 @@ const Login = () => {
     // Add loading to the body
     document.body.classList.add('loading'); 
     const data = new FormData(e.target)
+    const hashedPassword = CryptoJS.SHA256(data.get('password')).toString(CryptoJS.enc.Hex)
+    data.set('password', hashedPassword)
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/login`, {
       method: 'POST',
       body: data,
