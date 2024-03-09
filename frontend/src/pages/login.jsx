@@ -25,7 +25,9 @@ const Login = () => {
     // Add loading to the body
     document.body.classList.add('loading'); 
     const data = new FormData(e.target)
-    const hashedPassword = CryptoJS.SHA256(data.get('password')).toString(CryptoJS.enc.Hex)
+    var derived_key = CryptoJS.enc.Base64.parse(`${import.meta.env.VITE_ENCRYPTION_KEY}`)
+    var iv = CryptoJS.enc.Utf8.parse(`${import.meta.env.VITE_ENCRYPTION_IV}`);
+    var hashedPassword = CryptoJS.AES.encrypt(data.get('password'), derived_key, {iv: iv, mode: CryptoJS.mode.CBC}).toString();
     data.set('password', hashedPassword)
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/login`, {
       method: 'POST',

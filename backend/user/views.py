@@ -3,7 +3,7 @@ from django.views.decorators.http import require_http_methods
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
-from foodz.utils import create_token, decode_token
+from foodz.utils import create_token, decrypt_message
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from drf_yasg.utils import swagger_auto_schema
@@ -57,6 +57,8 @@ from user.models import User
 def register(request):
     user_details = request.data
     try:
+        password = decrypt_message(user_details.get('password'))
+        user_details['password'] = password
         user = User(**user_details)
         user.full_clean()
         user.save()
@@ -117,7 +119,7 @@ def login(request):
         return JsonResponse({"error": f"Invalid JSON {e}"}, status=400)
     try:
         user = User.objects.get(email=user_details.get('email'))
-        if user.password == user_details.get('password'):
+        if user.password == decrypt_message(user_details.get('password')):
             token = create_token(user.id, "user")
             return JsonResponse({"message": "Login successful", "token": token, "user_id": user.id,
                                  "firstName": user.firstName, "lastName": user.lastName, "email": user.email

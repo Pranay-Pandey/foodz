@@ -20,7 +20,9 @@ const Register = () => {
     e.preventDefault();
     // Add loading to the body
     document.body.classList.add('loading');
-    const hashedPassword = CryptoJS.SHA256(form.password).toString(CryptoJS.enc.Hex);
+    var derived_key = CryptoJS.enc.Base64.parse(`${import.meta.env.VITE_ENCRYPTION_KEY}`)
+    var iv = CryptoJS.enc.Utf8.parse(`${import.meta.env.VITE_ENCRYPTION_IV}`);
+    var hashedPassword = CryptoJS.AES.encrypt(form.password, derived_key, {iv: iv, mode: CryptoJS.mode.CBC}).toString();
     form.password = hashedPassword;
     fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/user/register`, {
       method: 'POST',
