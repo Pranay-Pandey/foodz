@@ -553,6 +553,7 @@ def editRecipe(request, id):
 @api_view(['DELETE'])
 @csrf_exempt
 @require_http_methods(['DELETE'])
+@transaction.atomic
 def deleteRecipe(request, id):
     token = request.headers.get('Authorization')
     if not token:
