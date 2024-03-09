@@ -83,7 +83,7 @@ def get_recipe(request):
             'time': openapi.Schema(type=openapi.TYPE_STRING),
             'ingredients': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(type=openapi.TYPE_STRING)),
             'procedure': openapi.Schema(type=openapi.TYPE_STRING),
-            'image': openapi.Schema(type=openapi.TYPE_FILE)
+            'image': openapi.Schema(type=openapi.TYPE_STRING)
         },
         required=['title', 'description', 'time', 'ingredients']
     ),
@@ -528,8 +528,6 @@ def editRecipe(request, id):
         recipe.description = data['description']
         recipe.time = data['time']
         recipe.image = data['image']
-        # if 'image' in request.FILES and request.FILES['image']:
-        #     recipe.image = request.FILES['image']
         recipe.save()
         recipe.ingredients.clear()
         for ingredient_name in data['ingredients'].split(','):
